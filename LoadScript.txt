@@ -1,0 +1,62 @@
+----------------
+Stores section:
+----------------
+Stores:
+LOAD
+    store_id,
+    storetype_id,
+    store_size,
+    city_id
+FROM [lib://DataFiles/store_cities.csv]
+(txt, codepage is 28591, embedded labels, delimiter is ',', msq);
+------------------------------------------------------------Products section:
+-----------------
+SET NullInterpret ='';
+
+Products:
+LOAD
+    product_id,
+    cluster_id,
+    hierarchy1_id,
+    hierarchy5_id
+FROM [lib://DataFiles/product_hierarchy.csv]
+(txt, codepage is 28591, embedded labels, delimiter is ',', msq);
+
+------------------------------------------------------------
+Sales section:
+--------------
+SET NullInterpret ='';
+
+Sales:
+LOAD
+    distinct product_id,
+    store_id,
+    "date",
+    Year("date") AS sales_year,
+    Month("date") AS sales_month,
+    Day("date") AS sales_day,
+    sales,
+    Money(revenue),
+    stock,
+    Money(price) AS price,
+    promo_bin_1,
+    promo_bin_2
+FROM [lib://DataFiles/sales.csv]
+(txt, codepage is 28591, embedded labels, delimiter is ',', msq);
+------------------------------------------------------------
+Joins section:
+--------------
+SET NullInterpret ='';
+
+Left Join(Sales) 
+Load * Resident Stores;
+
+Left Join(Sales)
+Load * Resident Products;
+
+Drop Table Stores;
+Drop Table Products;
+
+------------------------------------------------------------
+
+
